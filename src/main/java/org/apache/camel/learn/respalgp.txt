@@ -1,0 +1,63 @@
+package org.apache.camel.learn;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.camel.Exchange;
+import org.apache.camel.Processor;
+
+
+        /*  from("file:src/datos?noop=true&fileName=cardsclients.csv")
+                .bean(new MyProcessor(), "process")           
+                .setBody(constant("Data inserted successfully")); */
+
+
+
+                
+public class MyProcessor implements Processor{
+
+    // Constantes para los índices de los campos
+    private static final int BILL1_INDEX = 12;
+    private static final int BILL6_INDEX = 18;
+
+    public String procesaString(ArrayList<CreditCardData> creditCardList) {
+        //List<CreditCardData> creditCardList = new ArrayList<>();
+    //    String[] lines = body.split("\n");
+        int totalRows = lines.length;
+        int errorCount = 0;
+
+        for (String line : lines) {
+            String[] parts = line.split(",");
+            CreditCardData creditCard = new CreditCardData(parts[0], parts[1], parts[2], parts[3], parts[4], parts[5],
+                    parts[6], parts[7], parts[8], parts[9], parts[10], parts[11], parts[12], parts[13], parts[14],
+                    parts[15], parts[16], parts[17], parts[18], parts[19]);
+            creditCardList.add(creditCard);
+            try {
+                double bill1Value = Double.parseDouble(parts[BILL1_INDEX]);
+                double bill6Value = Double.parseDouble(parts[BILL6_INDEX]);
+
+                if (bill1Value <= 0) {
+                    errorCount++;
+                }
+
+                if (bill6Value <= 0) {
+                    errorCount++;
+                }
+            } catch (NumberFormatException e) {
+                errorCount++;
+            }
+        }
+
+        // Mostrar información sobre las filas procesadas
+        System.err.println("Filas Correctas: " + (totalRows - errorCount));
+        System.err.println("Filas Erroneas: " + errorCount);
+
+        return "Data inserted successfully. Total rows processed: " + totalRows;
+    }
+
+    @Override
+    public void process(Exchange exchange) throws Exception {
+        ArrayList<CreditCardData> creditCardList = exchange.getIn().getBody(ArrayList.class);
+        procesaString(creditCardList);
+    }
+}

@@ -1,0 +1,23 @@
+version: '3'
+services:
+  sftp:
+    image: atmoz/sftp
+    ports:
+      - "2222:22"
+    command: foo:pass:::upload
+    platform: linux/amd64
+
+  db:
+    image: postgres
+    restart: always
+    shm_size: 128mb
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - 5432:5432
+    platform: linux/amd64
+
+
+
